@@ -1,0 +1,237 @@
+{
+    "EURO_24": {
+        "teams": {
+            "0": [
+                "albania",
+                "al",
+                "alb"
+            ],
+            "1": [
+                "austria",
+                "at",
+                "aut"
+            ],
+            "2": [
+                "belgium",
+                "be",
+                "bel"
+            ],
+            "3": [
+                "croatia",
+                "hr",
+                "cro"
+            ],
+            "4": [
+                "czechia",
+                "cz",
+                "cze"
+            ],
+            "5": [
+                "denmark",
+                "dk",
+                "den"
+            ],
+            "6": [
+                "england",
+                "en",
+                "eng"
+            ],
+            "7": [
+                "france",
+                "fr",
+                "fra"
+            ],
+            "8": [
+                "georgia",
+                "ge",
+                "geo"
+            ],
+            "9": [
+                "germany",
+                "de",
+                "ger"
+            ],
+            "10": [
+                "hungary",
+                "hu",
+                "hun"
+            ],
+            "11": [
+                "italy",
+                "it",
+                "ita"
+            ],
+            "12": [
+                "netherlands",
+                "nl",
+                "ned"
+            ],
+            "13": [
+                "poland",
+                "pl",
+                "pol"
+            ],
+            "14": [
+                "portugal",
+                "pt",
+                "por"
+            ],
+            "15": [
+                "romania",
+                "ro",
+                "rou"
+            ],
+            "16": [
+                "scotland",
+                "sc",
+                "sco"
+            ],
+            "17": [
+                "serbia",
+                "rs",
+                "srb"
+            ],
+            "18": [
+                "slovakia",
+                "sk",
+                "svk"
+            ],
+            "19": [
+                "slovenia",
+                "si",
+                "svn"
+            ],
+            "20": [
+                "spain",
+                "es",
+                "esp"
+            ],
+            "21": [
+                "switzerland",
+                "ch",
+                "sui"
+            ],
+            "22": [
+                "turkey",
+                "tr",
+                "tur"
+            ],
+            "23": [
+                "ukraine",
+                "ua",
+                "ukr"
+            ]
+        },
+        "bets": {
+            "jacksaw": {
+                "wager": 100000,
+                "team": 2
+            },
+            "sdasd3": {
+                "wager": 100000,
+                "team": 4
+            },
+            "sdasd4": {
+                "wager": 100000,
+                "team": 5
+            },
+            "sdasd66": {
+                "wager": 100000,
+                "team": 5
+            },
+            "sdasd77": {
+                "wager": 100000,
+                "team": 3
+            },
+            "sdasd88": {
+                "wager": 100000,
+                "team": 1
+            }
+        }
+    },
+    "COPA_24": {
+        "teams": {
+            "0": [
+                "argentina",
+                "ar",
+                "arg"
+            ],
+            "1": [
+                "bolivia",
+                "bo",
+                "bol"
+            ],
+            "2": [
+                "brazil",
+                "br",
+                "bra"
+            ],
+            "3": [
+                "canada",
+                "ca",
+                "can"
+            ],
+            "4": [
+                "chile",
+                "cl",
+                "chi"
+            ],
+            "5": [
+                "colombia",
+                "co",
+                "col"
+            ],
+            "6": [
+                "costa rica",
+                "cr",
+                "crc"
+            ],
+            "7": [
+                "ecuador",
+                "ec",
+                "ecu"
+            ],
+            "8": [
+                "jamaica",
+                "jm",
+                "jam"
+            ],
+            "9": [
+                "mexico",
+                "mx",
+                "mex"
+            ],
+            "10": [
+                "panama",
+                "pa",
+                "pan"
+            ],
+            "11": [
+                "paraguay",
+                "py",
+                "par"
+            ],
+            "12": [
+                "peru",
+                "pe",
+                "per"
+            ],
+            "13": [
+                "united states",
+                "us",
+                "usa"
+            ],
+            "14": [
+                "uruguay",
+                "uy",
+                "uru"
+            ],
+            "15": [
+                "venezuela",
+                "ve",
+                "ven"
+            ]
+        },
+        "bets": {}
+    }
+}
