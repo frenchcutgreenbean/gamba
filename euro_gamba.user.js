@@ -107,6 +107,10 @@
     [*]If the total pot is 1m and you were the only user to predict x team you win the whole pot. 
     [/list]
 
+    Github: 
+    [url=https://github.com/frenchcutgreenbean/gamba/]Repo[/url]
+    [url=https://github.com/frenchcutgreenbean/gamba/blob/main/bets.json]Bets[/url]
+
     [b][size=24]How to enter:[/size][/b][list]
     [*]Send me a gift with the message "${giftExample} {team}"
     Chatbox Examples:

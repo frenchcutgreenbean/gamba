@@ -123,30 +123,6 @@
             ]
         },
         "bets": {
-            "jacksaw": {
-                "wager": 100000,
-                "team": 2
-            },
-            "sdasd3": {
-                "wager": 100000,
-                "team": 4
-            },
-            "sdasd4": {
-                "wager": 100000,
-                "team": 5
-            },
-            "sdasd66": {
-                "wager": 100000,
-                "team": 5
-            },
-            "sdasd77": {
-                "wager": 100000,
-                "team": 3
-            },
-            "sdasd88": {
-                "wager": 100000,
-                "team": 1
-            }
         }
     },
     "COPA_24": {
