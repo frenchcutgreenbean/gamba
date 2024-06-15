@@ -2,6 +2,7 @@
     "EURO_24": {
         "image": "https://i.ibb.co/L9kx0Nm/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception.webp",
         "gift_flag": "euro",
+        "total_wagered": 100000,
         "clean_name": "UEFA EURO 2024",
         "close_date": "06-16-2024",
         "close_time": "12:00:00",
@@ -132,27 +133,12 @@
             "jacksaw": {
                 "wager": 100000,
                 "team": 20
-            },
-            "qwe": {
-                "wager": 100000,
-                "team": 3
-            },
-            "ffa": {
-                "wager": 100000,
-                "team": 3
-            },
-            "scac": {
-                "wager": 100000,
-                "team": 20
-            },
-            "bb": {
-                "wager": 100000,
-                "team": 5
             }
         }
     },
     "COPA_24": {
         "clean_name": "Copa America 2024",
+        "total_wagered": 0,
         "status": "open",
         "close_date": "06-20-2024",
         "close_time": "12:00:00",
@@ -246,6 +232,7 @@
         "status": "open",
         "close_date": "06-15-2024",
         "close_time": "14:00:00",
+        "total_wagered": 0,
         "bets": {},
         "teams": {
             "0": [
@@ -266,6 +253,7 @@
     "CHvHU": {
         "status": "open",
         "bets": {},
+        "total_wagered": 0,
         "teams": {
             "0": [
                 "switzerland",

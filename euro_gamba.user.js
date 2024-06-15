@@ -112,7 +112,7 @@ Closed odds section.
     e.g. (500,000 / 883,333) * 7,000,000 ≈ 3,946,656 BON
     
     [b][size=24]How to enter:[/size][/b][list]
-    [*]Send me a gift with the message "{tourney_flag} {team}"
+    [*]Send me a gift with the message "{gifting flag} {team}"
     Chatbox Examples:
     /gift ${username} 100000 euro esp
     /gift ${username} 100000 euro Germany
@@ -132,14 +132,10 @@ Closed odds section.
     return newMessage;
   }
 
-  function makeTables(teamData, betData) {
+  function makeTables(totalWagered, teamData, betData) {
     let tableInfo = "[table]";
 
-    let totalWagered = 0;
-    for (let user in betData) {
-      totalWagered += betData[user].wager;
-    }
-
+    console.log(totalWagered);
     for (let teamIndex in teamData) {
       let teamName = teamData[teamIndex][0].toLowerCase();
       teamName = teamName[0].toUpperCase() + teamName.substring(1);
@@ -188,20 +184,21 @@ Closed odds section.
     let eventsSection = "";
     for (const [key, value] of Object.entries(openEvents)) {
       const teamData = openEvents[key].teams;
+      const totalWagered = openEvents[key].total_wagered;
       const betData = openEvents[key].bets;
       const image = openEvents[key].image;
-      const bbcodeImage = image ? `[img=350]${image}[/img]` : "";
+      const bbcodeImage = image ? `[img=250]${image}[/img]` : "";
       const title = openEvents[key].clean_name;
       const giftFlag = openEvents[key].gift_flag;
       const closing =
         openEvents[key].close_date + "-" + openEvents[key].close_time + "UTC";
-      const table = makeTables(teamData, betData);
+      const table = makeTables(totalWagered, teamData, betData);
       const teamPortion = `
       [center]${bbcodeImage}
       [b][size=24]${title}[/size][/b]
-      [b][size=18]Closing: ${closing}[/size][/b]
-      [spoiler]
-      Gifting Flag = ${giftFlag}
+      [b][size=14]Closing: ${closing}[/size][/b]
+      [b][size=14]Total Wagered: ${totalWagered}[/size][/b]
+      [spoiler]Gifting Flag = ${giftFlag}
       ${table}
       [/spoiler]
       [/center]
@@ -247,6 +244,7 @@ Closed odds section.
     const textArea = document.getElementById("bbcode-content");
     const newMessage = createPost();
     textArea.value = newMessage;
+    textArea.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
   function injectEditButton() {

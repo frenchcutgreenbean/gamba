@@ -51,6 +51,7 @@ def create_tournament():
     newTourney["close_time"] = tourney.get("close_time")
     newTourney["gift_flag"] = tourney.get("gift_flag")
     newTourney["image"] = tourney.get("image") or None
+    newTourney["total_wagered"] = 0
     data[tournament_name] = newTourney
     save_data(data)
     return jsonify(newTourney), 200
@@ -107,6 +108,7 @@ def add_bet():
         return jsonify({"error": "Invalid team"}), 400
 
     tournament["bets"][username] = {"wager": wager, "team": team_id}
+    tournament["total_wagered"] += wager
     save_data(data)
     return jsonify({"message": "Bet added successfully"}), 201
 
