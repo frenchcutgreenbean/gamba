@@ -368,7 +368,6 @@ Improve the chatbox settings controls for easier event handling.
 
       let teamWagers = {};
 
-      // Calculate the total wagered on each team
       for (let user in bets) {
         const team = bets[user].team;
         const wager = bets[user].wager;
@@ -378,8 +377,6 @@ Improve the chatbox settings controls for easier event handling.
         }
         teamWagers[team] += wager;
       }
-
-      // Calculate rewards for users who bet on the winning team
       for (let user in bets) {
         const bet = bets[user];
         if (bet.team === teamID) {
@@ -387,7 +384,6 @@ Improve the chatbox settings controls for easier event handling.
           const teamTotalWagered = teamWagers[teamID];
           const userReward = (userWager / teamTotalWagered) * totalWagered;
 
-          // Log the gift message to the console
           console.log(
             `/gift ${user} ${userReward.toFixed(2)} Congrats you won!`
           );
