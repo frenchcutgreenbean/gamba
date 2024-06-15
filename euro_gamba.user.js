@@ -72,8 +72,14 @@ Improve the chatbox settings controls for easier event handling.
         const message = cells[3].innerText.trim();
         const splitMessage = message.split(" ");
         const tourneyKey = flagDict[splitMessage[0].toLowerCase().trim()];
+
         if (sender === username) continue;
         if (!splitMessage || !tourneyKey) {
+          continue;
+        }
+        if (splitMessage.length < 2) {
+          console.log("no team given");
+          console.log(`/gift ${sender} ${amount} please select a team`);
           continue;
         }
         if (openEvents[tourneyKey].bets[sender]) {
@@ -138,7 +144,6 @@ Improve the chatbox settings controls for easier event handling.
   function makeTables(totalWagered, teamData, betData) {
     let tableInfo = "[table]";
 
-    console.log(totalWagered);
     for (let teamIndex in teamData) {
       let teamName = teamData[teamIndex][0].toLowerCase();
       teamName = teamName[0].toUpperCase() + teamName.substring(1);
@@ -189,7 +194,6 @@ Improve the chatbox settings controls for easier event handling.
     })
       .then((response) => {
         closedEvents = JSON.parse(response.responseText);
-        console.log;
         for (const [key, value] of Object.entries(closedEvents)) {
           const gift_flag = value.gift_flag;
           flagDict[gift_flag] = key;

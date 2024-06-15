@@ -237,8 +237,17 @@
         "status": "open",
         "close_date": "06-15-2024",
         "close_time": "14:00:00",
-        "total_wagered": 0,
-        "bets": {},
+        "total_wagered": 150000,
+        "bets": {
+            "dantayy": {
+                "wager": 100000,
+                "team": 0
+            },
+            "DreamTheater": {
+                "wager": 50000,
+                "team": 1
+            }
+        },
         "teams": {
             "0": [
                 "spain",
