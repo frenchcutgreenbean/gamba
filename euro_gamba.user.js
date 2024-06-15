@@ -8,11 +8,34 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=blutopia.cc
 // @grant        GM.xmlHttpRequest
 // ==/UserScript==
-
+/*
+TODO: Convert to handle all events in bets.json
+      Close time logic to update forum post
+*/
 (function () {
   "use strict";
 
-  const tournament = "EURO_24";
+  const events = ["EURO_24", "COPA_24", "SPvHR", "HUvCH"];
+
+  const eventsInfo = {
+    EURO_24: {
+      identifier: "euro",
+      closeTime: "2024-06-16 12PM UTC",
+    },
+    COPA_24: {
+      identifier: "copa",
+      closeTime: "2024-06-20 8PM UTC",
+    },
+    SPvHR: {
+      identifier: "spvhr",
+      closeTime: "2024-06-14 4PM UTC",
+    },
+    HUvCH: {
+      identifier: "huvch",
+      closeTime: "2024-06-14 1PM UTC",
+    },
+  }
+
   let usernameAnchor = document.querySelector(
     ".top-nav__username--highresolution"
   );
@@ -63,7 +86,7 @@
         amount = parseInt(amount);
         const message = cells[3].innerText.trim();
         const splitMessage = message.split(" ");
-        const isGamba = tournament
+        const isGamba = events
           .toLowerCase()
           .includes(splitMessage[0].toLowerCase());
         if (sender === username) continue;
@@ -164,7 +187,7 @@
   }
 
   function getTourneyData() {
-    const betURL = `http://127.0.0.1:5000/bets/${tournament}`;
+    const betURL = `http://127.0.0.1:5000/bets/${events}`;
 
     GM_xmlHttpRequest_promise({
       method: "GET",
@@ -184,7 +207,7 @@
   }
 
   function getTeamsData() {
-    const teamURL = `http://127.0.0.1:5000/teams/${tournament}`;
+    const teamURL = `http://127.0.0.1:5000/teams/${events}`;
     GM_xmlHttpRequest_promise({
       method: "GET",
       url: teamURL,
@@ -218,7 +241,7 @@
       method: "POST",
       url: betURL,
       data: JSON.stringify({
-        tournament,
+        tournament: events,
         username,
         wager,
         team,

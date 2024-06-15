@@ -5,6 +5,8 @@ import os
 app = Flask(__name__)
 DATA_FILE = "bets.json"
 
+# TODO: add create event endpoint
+
 
 # Load data from the JSON file
 def load_data():
