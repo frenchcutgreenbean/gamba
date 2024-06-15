@@ -4,44 +4,26 @@
 // @version      2024-06-14
 // @description  gamba script for Euro 2024
 // @author       You
-// @match        https://blutopia.cc/forums/topics/5827*
+// @match        https://blutopia.cc/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=blutopia.cc
 // @grant        GM.xmlHttpRequest
 // ==/UserScript==
 /*
-TODO: Convert to handle all events in bets.json
-      Close time logic to update forum post
+TODO: 
+Set the winning team
+Chatbox gift winning commands.
+Closed odds section.
 */
 (function () {
   "use strict";
-
-  const events = ["EURO_24", "COPA_24", "SPvHR", "HUvCH"];
-
-  const eventsInfo = {
-    EURO_24: {
-      identifier: "euro",
-      closeTime: "2024-06-16 12PM UTC",
-    },
-    COPA_24: {
-      identifier: "copa",
-      closeTime: "2024-06-20 8PM UTC",
-    },
-    SPvHR: {
-      identifier: "spvhr",
-      closeTime: "2024-06-14 4PM UTC",
-    },
-    HUvCH: {
-      identifier: "huvch",
-      closeTime: "2024-06-14 1PM UTC",
-    },
-  }
-
   let usernameAnchor = document.querySelector(
     ".top-nav__username--highresolution"
   );
   let username = usernameAnchor.querySelector("span").innerText.trim();
   let giftURL = `https://blutopia.cc/users/${username}/gifts`;
-  let betsData, teamsData, totalWagered;
+
+  let openEvents;
+  let flagDict = {};
 
   function GM_xmlHttpRequest_promise(details) {
     return new Promise((resolve, reject) => {
@@ -86,144 +68,150 @@ TODO: Convert to handle all events in bets.json
         amount = parseInt(amount);
         const message = cells[3].innerText.trim();
         const splitMessage = message.split(" ");
-        const isGamba = events
-          .toLowerCase()
-          .includes(splitMessage[0].toLowerCase());
+        const tourneyKey = flagDict[splitMessage[0].toLowerCase().trim()];
         if (sender === username) continue;
-        if (!splitMessage || !isGamba) {
+        if (!splitMessage || !tourneyKey) {
           continue;
         }
-        if (betsData[sender]) {
+        if (openEvents[tourneyKey].bets[sender]) {
           console.log("already in tournament: " + sender);
           continue;
         }
-        giftData.push({ amount, sender, team: splitMessage[1].toLowerCase() });
+        giftData.push({
+          tourneyKey,
+          amount,
+          sender,
+          team: splitMessage[1].toLowerCase(),
+        });
       }
     }
 
     giftData.forEach((data) => {
-      addBet(data.sender, data.amount, data.team);
+      addBet(data.tourneyKey, data.sender, data.amount, data.team);
     });
   }
 
-  function editForum() {
-    const mainImage =
-      "https://i.ibb.co/L9kx0Nm/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception.webp";
-    const tournamentTitle = "UEFA EURO 2024";
-    const giftExample = "euro";
-    const teamExamples = ["esp", "Germany"];
+  function createPost() {
+    const baseMessage = `
+    [center][img=100]https://i.ibb.co/DL2zLYr/BIGMONEY.gif[/img]
+    [b][size=24]GAMBA!![/size][/b]
 
-    const forumMessage = `
-    [center]
-    [url=${mainImage}][img=350]${mainImage}[/img][/url] 
-
-    [b][size=24]${tournamentTitle}[/size][/b]
-
-    Bet BON.
-    [/center]
+    Extreme Early ALPHA. Bet BON.[/center]
 
     [b][size=24]How it works:[/size][/b]
-    [list]
-    [*]Wager to win BON based on total of other bets & total of other bets on your prediction.
+    [list][*]Wager to win BON based on total of other bets & total of other bets on your prediction.
     [*]Odds are based on the assumption you are betting 100k.
     [*]Odds are locked when betting is CLOSED.
-    [*]If the total pot is 1m and you were the only user to predict x team you win the whole pot. 
-    [/list]
+    [*]If the total pot is 1m and you were the only user to predict x team you win the whole pot.[/list]
 
-    Github: 
-    [url=https://github.com/frenchcutgreenbean/gamba/]Repo[/url]
-    [url=https://github.com/frenchcutgreenbean/gamba/blob/main/bets.json]Bets[/url]
-
+    Github: [url=https://github.com/frenchcutgreenbean/gamba/]Repo[/url] | [url=https://github.com/frenchcutgreenbean/gamba/blob/main/bets.json]Bets[/url]
+    
+    [b][size=24]Winning Calculation:[/size][/b]
+    Assuming you pick the winning team.
+         (Your wager / Total wager on team) * Total pot ≈ winnings
+    e.g. (500,000 / 883,333) * 7,000,000 ≈ 3,946,656 BON
+    
     [b][size=24]How to enter:[/size][/b][list]
-    [*]Send me a gift with the message "${giftExample} {team}"
+    [*]Send me a gift with the message "{tourney_flag} {team}"
     Chatbox Examples:
-    /gift ${username} 100000 ${giftExample} ${teamExamples[0]}
-    /gift ${username} 100000 ${giftExample} ${teamExamples[1]}
-    [*]Make sure your wager is between 50k and 500k.
-    [/list]
+    /gift ${username} 100000 euro esp
+    /gift ${username} 100000 euro Germany
+    [*]Make sure your wager is between 50k and 500k.[/list]
 
     [b][size=24]Rules:[/size][/b]
-
-    [list]
-    [*]You can only make 1 wager!
+    [list][*]You can only make 1 wager!
     [*]Bet limits are 50k min and 500k max.
     [*]No refunds on valid wagers.
     [/list]
+
+    [b][size=24]Open Bets.[/size][/b]
   `;
 
+    const eventsSection = processEvents();
+    const newMessage = baseMessage + eventsSection;
+    return newMessage;
+  }
+
+  function makeTables(teamData, betData) {
     let tableInfo = "[table]";
-    console.log(betsData, teamsData);
-    for (let teamIndex in teamsData) {
-      // Get team name and format it
-      let teamName = teamsData[teamIndex][0].toLowerCase();
+
+    let totalWagered = 0;
+    for (let user in betData) {
+      totalWagered += betData[user].wager;
+    }
+
+    for (let teamIndex in teamData) {
+      let teamName = teamData[teamIndex][0].toLowerCase();
       teamName = teamName[0].toUpperCase() + teamName.substring(1);
 
-      // Initialize teamWagers for current team
       let teamWagers = 0;
 
-      // Iterate through betsData to sum wagers on current team
-      for (let user in betsData) {
-        if (betsData[user].team === parseInt(teamIndex)) {
-          teamWagers += betsData[user].wager;
+      for (let user in betData) {
+        if (betData[user].team === parseInt(teamIndex)) {
+          teamWagers += betData[user].wager;
         }
       }
 
-      // Calculate odds
       const maxPayoutRatio = totalWagered / 100000; // Assuming base wager of 100000
       let odds = teamWagers > 0 ? maxPayoutRatio / (teamWagers / 100000) : 0;
-
-      // Log and build tableInfo string
-      console.log(odds.toFixed(2));
       tableInfo += `[tr][td]${teamName}[/td][td]${odds.toFixed(2)}[/td][/tr]`;
     }
 
     const date = new Date();
     tableInfo += `[/table]
-      Last Updated (UTC): ${date.toUTCString()}
-      `;
-
-    let newMessage = forumMessage + "[center]" + tableInfo + "[/center]";
-    console.log(newMessage);
+    Last Updated (UTC): ${date.toUTCString()}
+    `;
+    const newTable = "[center]" + tableInfo + "[/center]";
+    return newTable;
   }
 
-  function getTourneyData() {
-    const betURL = `http://127.0.0.1:5000/bets/${events}`;
-
+  function getOpenTournaments() {
+    const tournamentsURL = `http://127.0.0.1:5000/tournaments`;
     GM_xmlHttpRequest_promise({
       method: "GET",
-      url: betURL,
+      url: tournamentsURL,
     })
       .then((response) => {
-        betsData = JSON.parse(response.responseText);
-        totalWagered = Object.values(betsData).reduce(
-          (acc, bet) => acc + bet.wager,
-          0
-        );
-        getTeamsData();
-      })
-      .catch((error) => {
-        console.error("Error in retrieving bets data:", error);
-      });
-  }
-
-  function getTeamsData() {
-    const teamURL = `http://127.0.0.1:5000/teams/${events}`;
-    GM_xmlHttpRequest_promise({
-      method: "GET",
-      url: teamURL,
-    })
-      .then((response) => {
-        teamsData = JSON.parse(response.responseText);
-
+        openEvents = JSON.parse(response.responseText);
+        for (const [key, value] of Object.entries(openEvents)) {
+          const gift_flag = value.gift_flag;
+          flagDict[gift_flag] = key;
+        }
         getGifts();
-        editForum();
       })
       .catch((error) => {
-        console.error("Error in retrieving teams data:", error);
+        console.error("Error in retrieving tournaments:", error);
       });
   }
 
-  function addBet(username, wager, team) {
+  function processEvents() {
+    let eventsSection = "";
+    for (const [key, value] of Object.entries(openEvents)) {
+      const teamData = openEvents[key].teams;
+      const betData = openEvents[key].bets;
+      const image = openEvents[key].image;
+      const bbcodeImage = image ? `[img=350]${image}[/img]` : "";
+      const title = openEvents[key].clean_name;
+      const giftFlag = openEvents[key].gift_flag;
+      const closing =
+        openEvents[key].close_date + "-" + openEvents[key].close_time + "UTC";
+      const table = makeTables(teamData, betData);
+      const teamPortion = `
+      [center]${bbcodeImage}
+      [b][size=24]${title}[/size][/b]
+      [b][size=18]Closing: ${closing}[/size][/b]
+      [spoiler]
+      Gifting Flag = ${giftFlag}
+      ${table}
+      [/spoiler]
+      [/center]
+      `;
+      eventsSection += teamPortion;
+    }
+    return eventsSection;
+  }
+
+  function addBet(tourney, username, wager, team) {
     if (wager > 500000 || wager < 50000) {
       console.log("Wager not accepted");
       console.log(
@@ -241,19 +229,35 @@ TODO: Convert to handle all events in bets.json
       method: "POST",
       url: betURL,
       data: JSON.stringify({
-        tournament: events,
+        tournament: tourney,
         username,
         wager,
         team,
       }),
     })
       .then(() => {
-        getTourneyData();
+        getOpenTournaments();
       })
       .catch((error) => {
         console.error("Error in adding bet:", error);
       });
   }
 
-  getTourneyData();
+  function onEditPost() {
+    const textArea = document.getElementById("bbcode-content");
+    const newMessage = createPost();
+    textArea.value = newMessage;
+  }
+
+  function injectEditButton() {
+    const injectPoint = document.querySelector("h2.panel__heading");
+    const editButton = document.createElement("span");
+    editButton.innerHTML = "✏️";
+    editButton.style.cursor = "pointer";
+    editButton.style.marginLeft = "20px";
+    editButton.addEventListener("click", onEditPost);
+    injectPoint.appendChild(editButton);
+  }
+  injectEditButton();
+  getOpenTournaments();
 })();

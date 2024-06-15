@@ -31,6 +31,53 @@ def get_team_id(tournament, team_name):
     return None
 
 
+# Endpoints to create a new tournament
+# payload = {"tournament": "NAME", "teams": {}, "clean_name": "Name For Forum", "close_date": "m-d-y", "close_time": "00:00:00", "gift_flag": "flag", "image": "link"}
+@app.route("/create", methods=["POST"])
+def create_tournament():
+    data = load_data()
+    tourney = request.json
+    tournament_name = tourney.get("tournament")
+    teams = tourney.get("teams")
+    clean_name = tourney.get("clean_name")
+    if not tournament_name or not teams or not clean_name:
+        return jsonify({"error": "Missing required parameters"}), 400
+    newTourney = {}
+    newTourney["status"] = "open"
+    newTourney["bets"] = {}
+    newTourney["teams"] = teams
+    newTourney["clean_name"] = clean_name
+    newTourney["close_date"] = tourney.get("close_date")
+    newTourney["close_time"] = tourney.get("close_time")
+    newTourney["gift_flag"] = tourney.get("gift_flag")
+    newTourney["image"] = tourney.get("image") or None
+    data[tournament_name] = newTourney
+    save_data(data)
+    return jsonify(newTourney), 200
+
+
+# Endpoint to close a tournament
+@app.route("/close/<tournament>", methods=["GET"])
+def close_tournament(tournament):
+    data = load_data()
+    if tournament not in data:
+        return jsonify({"error": "Tournament not found"}), 404
+    data[tournament]["status"] = "closed"
+    save_data(data)
+    return jsonify({"message": "Tournament closed successfully"}), 200
+
+
+# Endpoint to get open tournaments
+@app.route("/tournaments/", methods=["GET"])
+def get_tournaments():
+    data = load_data()
+    open_tournaments = {}
+    for key, tourney in data.items():
+        if tourney["status"] == "open":
+            open_tournaments[key] = tourney
+    return jsonify(open_tournaments), 200
+
+
 # Endpoint to add a user's bet
 @app.route("/bet", methods=["POST"])
 def add_bet():
