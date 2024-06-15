@@ -79,7 +79,7 @@ def get_tournaments():
     return jsonify(open_tournaments), 200
 
 
-# Endpoint to get open tournaments
+# Endpoint to get closed tournaments
 @app.route("/tournaments/closed", methods=["GET"])
 def get_closed_tournaments():
     data = load_data()
@@ -122,35 +122,6 @@ def add_bet():
     tournament["total_wagered"] += wager
     save_data(data)
     return jsonify({"message": "Bet added successfully"}), 201
-
-
-# Endpoint to get all bets for a specific tournament
-@app.route("/bets/<tournament>", methods=["GET"])
-def get_bets(tournament):
-    data = load_data()
-    if tournament not in data:
-        return jsonify({"error": "Tournament not found"}), 404
-    return jsonify(data[tournament]["bets"])
-
-
-# Endpoint to get all teams for a specific tournament
-@app.route("/teams/<tournament>", methods=["GET"])
-def get_teams(tournament):
-    data = load_data()
-    if tournament not in data:
-        return jsonify({"error": "Tournament not found"}), 404
-    return jsonify(data[tournament]["teams"])
-
-
-# Endpoint to get a specific user's bet for a specific tournament
-@app.route("/bet/<tournament>/<username>", methods=["GET"])
-def get_bet(tournament, username):
-    data = load_data()
-    if tournament not in data:
-        return jsonify({"error": "Tournament not found"}), 404
-    if username not in data[tournament]["bets"]:
-        return jsonify({"error": "User bet not found"}), 404
-    return jsonify(data[tournament]["bets"][username])
 
 
 if __name__ == "__main__":
