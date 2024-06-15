@@ -125,6 +125,7 @@ Improve the chatbox settings controls for easier event handling.
     Chatbox Examples:
     /gift ${username} 100000 euro esp
     /gift ${username} 100000 euro Germany
+    *accepted 2 letter + 3 letter country code or just country name see github
     [*]Make sure your wager is between 50k and 500k.[/list]
 
     [b][size=24]Rules:[/size][/b]
