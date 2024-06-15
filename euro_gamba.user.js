@@ -109,10 +109,9 @@ Improve the chatbox settings controls for easier event handling.
 
     [b][size=24]How it works:[/size][/b]
     [list][*]Wager to win BON based on total of other bets & total of other bets on your prediction.
-    [*]Odds are based on the assumption you are betting 100k.
-    [*]Odds are locked when betting is CLOSED.
-    [*]If the total pot is 1m and you were the only user to predict x team you win the whole pot.[/list]
+    [*]Odds are based on the assumption you are betting 100k.[/list]
 
+    Read all the source code here:
     Github: [url=https://github.com/frenchcutgreenbean/gamba/]Repo[/url] | [url=https://github.com/frenchcutgreenbean/gamba/blob/main/bets.json]Bets[/url]
     
     [b][size=24]Winning Calculation:[/size][/b]
@@ -127,14 +126,16 @@ Improve the chatbox settings controls for easier event handling.
     /gift ${username} 100000 euro Germany
     *accepted 2 letter + 3 letter country code or just country name see github
     [*]Make sure your wager is between 50k and 500k.[/list]
+    [*]Please make sure you read everything and send the correct amount. I can fix it if you make a mistake just PM me before bets close.
 
     [b][size=24]Rules:[/size][/b]
     [list][*]You can only make 1 wager!
     [*]Bet limits are 50k min and 500k max.
-    [*]No refunds on valid wagers.
-    [/list]
+    [*]No refunds on valid wagers.[/list]
 
-    [b][size=24]Open Bets.[/size][/b]
+    [i]odds show as 0.0 if no bets have ben place for them yet[/i]
+
+    [center][b][size=24]Open Bets.[/size][/b][/center]
   `;
 
     const eventsSection = processEvents();
@@ -223,7 +224,8 @@ Improve the chatbox settings controls for easier event handling.
       [b][size=24]${title}[/size][/b]
       [b][size=14]Closing: ${closing}[/size][/b]
       [b][size=14]Total Wagered: ${totalWagered}[/size][/b]
-      [spoiler]Gifting Flag = ${giftFlag}
+      [b][size=14]Gifting Flag: ${giftFlag}[/size][/b]
+      [spoiler]
       ${table}
       [/spoiler]
       [/center]
