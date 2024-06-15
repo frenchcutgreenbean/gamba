@@ -1,28 +1,31 @@
 // ==UserScript==
-// @name         EURO_24
+// @name         GAMBA
 // @namespace    http://tampermonkey.net/
 // @version      2024-06-14
-// @description  gamba script for Euro 2024
+// @description  sports gambling script
 // @author       You
 // @match        https://blutopia.cc/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=blutopia.cc
 // @grant        GM.xmlHttpRequest
 // ==/UserScript==
 /*
+ALL MATHS DONE BY GPT, so any mathletes please help if you see errors!
 TODO: 
-Set the winning team
-Chatbox gift winning commands.
-Closed odds section.
+Improve the chatbox settings controls for easier event handling.
 */
 (function () {
   "use strict";
+  const currentURL = window.location.href;
+  const isEdit = currentURL.includes("edit");
+  const isCreate = currentURL.includes("create");
+
   let usernameAnchor = document.querySelector(
     ".top-nav__username--highresolution"
   );
   let username = usernameAnchor.querySelector("span").innerText.trim();
   let giftURL = `https://blutopia.cc/users/${username}/gifts`;
 
-  let openEvents;
+  let openEvents, closedEvents;
   let flagDict = {};
 
   function GM_xmlHttpRequest_promise(details) {
@@ -173,7 +176,24 @@ Closed odds section.
           const gift_flag = value.gift_flag;
           flagDict[gift_flag] = key;
         }
-        getGifts();
+      })
+      .catch((error) => {
+        console.error("Error in retrieving tournaments:", error);
+      });
+  }
+  function getClosedTournaments() {
+    const tournamentsURL = `http://127.0.0.1:5000/tournaments/closed`;
+    GM_xmlHttpRequest_promise({
+      method: "GET",
+      url: tournamentsURL,
+    })
+      .then((response) => {
+        closedEvents = JSON.parse(response.responseText);
+        console.log;
+        for (const [key, value] of Object.entries(closedEvents)) {
+          const gift_flag = value.gift_flag;
+          flagDict[gift_flag] = key;
+        }
       })
       .catch((error) => {
         console.error("Error in retrieving tournaments:", error);
@@ -234,6 +254,7 @@ Closed odds section.
     })
       .then(() => {
         getOpenTournaments();
+        getClosedTournaments();
       })
       .catch((error) => {
         console.error("Error in adding bet:", error);
@@ -241,6 +262,7 @@ Closed odds section.
   }
 
   function onEditPost() {
+    getGifts();
     const textArea = document.getElementById("bbcode-content");
     const newMessage = createPost();
     textArea.value = newMessage;
@@ -256,6 +278,177 @@ Closed odds section.
     editButton.addEventListener("click", onEditPost);
     injectPoint.appendChild(editButton);
   }
-  injectEditButton();
+  if (isEdit || isCreate) {
+    injectEditButton();
+  }
+
+  function addSettingsButton() {
+    const menuSelector = document.querySelector("#chatbox_header div");
+    if (!menuSelector) {
+      setTimeout(addSettingsButton, 1000);
+      return;
+    }
+    const settingsButton = document.createElement("span");
+    settingsButton.innerHTML = "⚙️";
+    settingsButton.style.cursor = "pointer";
+    settingsButton.style.marginLeft = "20px";
+    settingsButton.addEventListener("click", createModal);
+    menuSelector.prepend(settingsButton);
+  }
+
+  function addStyle(css) {
+    const style = document.createElement("style");
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function createModal() {
+    const modal = document.createElement("div");
+    modal.id = "custom-modal";
+    modal.className = "modal-container";
+    const modalContent = document.createElement("div");
+    modalContent.className = "modal-content";
+    const closeButton = document.createElement("span");
+    closeButton.className = "close-button";
+    closeButton.innerHTML = "&times;";
+    closeButton.onclick = function () {
+      modal.style.display = "none";
+    };
+    modalContent.appendChild(closeButton);
+    const content = document.createElement("div");
+    content.className = "modal-inner-content";
+    content.innerHTML = `
+    <h3>GAMBA SETTINGS</h3>
+    <div class="modal-form" id="close-event">
+    <label for="close-title">Event Name</label>
+    <input type="text" id="close-title" />
+    <span class="modal-btn" id="close-event-btn">Close</>
+    </div>
+
+    <div class="modal-form"  id="end-event">
+    <label for="end-title">Event Name</label>
+    <input type="text" id="end-title" />
+    <label for="winning-team-id">Team ID</label>
+    <input type="number" id="winning-team-id"  placeholder="0" />
+    <span class="modal-btn" id="end-event-btn">End</>    
+    </div>
+    `;
+    modalContent.appendChild(content);
+
+    modal.appendChild(modalContent);
+
+    document.body.appendChild(modal);
+    const closeEventBtn = document.getElementById("close-event-btn");
+    closeEventBtn.onclick = function () {
+      const closeTitle = document.getElementById("close-title").value;
+      const closeURL = `http://127.0.0.1:5000/close/${closeTitle}`;
+      GM_xmlHttpRequest_promise({
+        headers: {
+          "Content-type": "application/json",
+          Accept: "application/json",
+        },
+        method: "GET",
+        url: closeURL,
+      })
+        .then(() => {
+          getOpenTournaments();
+          getClosedTournaments();
+        })
+        .catch((error) => {
+          console.error("Error in closing event:", error);
+        });
+    };
+    const endEventBtn = document.getElementById("end-event-btn");
+    endEventBtn.onclick = function () {
+      const teamID = parseInt(document.getElementById("winning-team-id").value);
+      const eventName = document.getElementById("end-title").value;
+      const bets = closedEvents[eventName].bets || undefined;
+      const totalWagered = closedEvents[eventName].total_wagered;
+      if (!bets) return;
+
+      let teamWagers = {};
+
+      // Calculate the total wagered on each team
+      for (let user in bets) {
+        const team = bets[user].team;
+        const wager = bets[user].wager;
+
+        if (!teamWagers[team]) {
+          teamWagers[team] = 0;
+        }
+        teamWagers[team] += wager;
+      }
+
+      // Calculate rewards for users who bet on the winning team
+      for (let user in bets) {
+        const bet = bets[user];
+        if (bet.team === teamID) {
+          const userWager = bet.wager;
+          const teamTotalWagered = teamWagers[teamID];
+          const userReward = (userWager / teamTotalWagered) * totalWagered;
+
+          // Log the gift message to the console
+          console.log(
+            `/gift ${user} ${userReward.toFixed(2)} Congrats you won!`
+          );
+        }
+      }
+    };
+
+    addStyle(`
+        label {
+        margin-top:10px;}
+        .modal-btn {
+        cursor: pointer;
+        }
+        .modal-form {
+            display: flex;
+            height: 100px;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+        .modal-container {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #333;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 400px;
+            height: 400px;
+            overflow-y: scroll;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-inner-content {
+            max-height: 300px; /* Adjust as needed to fit within the modal content */
+        }
+    `);
+    modal.style.display = "flex";
+  }
+  getClosedTournaments();
   getOpenTournaments();
+  addSettingsButton();
 })();

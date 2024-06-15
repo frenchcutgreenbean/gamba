@@ -79,6 +79,17 @@ def get_tournaments():
     return jsonify(open_tournaments), 200
 
 
+# Endpoint to get open tournaments
+@app.route("/tournaments/closed", methods=["GET"])
+def get_closed_tournaments():
+    data = load_data()
+    open_tournaments = {}
+    for key, tourney in data.items():
+        if tourney["status"] == "closed":
+            open_tournaments[key] = tourney
+    return jsonify(open_tournaments), 200
+
+
 # Endpoint to add a user's bet
 @app.route("/bet", methods=["POST"])
 def add_bet():
