@@ -366,38 +366,7 @@ Improve the chatbox settings controls for easier event handling.
         });
     };
     const endEventBtn = document.getElementById("end-event-btn");
-    endEventBtn.onclick = function () {
-      const teamID = parseInt(document.getElementById("winning-team-id").value);
-      const eventName = document.getElementById("end-title").value;
-      const bets = closedEvents[eventName].bets || undefined;
-      const totalWagered = closedEvents[eventName].total_wagered;
-      if (!bets) return;
-
-      let teamWagers = {};
-
-      for (let user in bets) {
-        const team = bets[user].team;
-        const wager = bets[user].wager;
-
-        if (!teamWagers[team]) {
-          teamWagers[team] = 0;
-        }
-        teamWagers[team] += wager;
-      }
-      for (let user in bets) {
-        const bet = bets[user];
-        if (bet.team === teamID) {
-          const userWager = bet.wager;
-          const teamTotalWagered = teamWagers[teamID];
-          const userReward = (userWager / teamTotalWagered) * totalWagered;
-
-          console.log(
-            `/gift ${user} ${userReward.toFixed(2)} Congrats you won!`
-          );
-        }
-      }
-    };
-
+    endEventBtn.onclick = (e) => onEndEvent(e);
     addStyle(`
         label {
         margin-top:10px;}
@@ -450,6 +419,46 @@ Improve the chatbox settings controls for easier event handling.
         }
     `);
     modal.style.display = "flex";
+  }
+  function onEndEvent(e) {
+    const teamID = parseInt(document.getElementById("winning-team-id").value);
+    const eventName = document.getElementById("end-title").value;
+    const bets = closedEvents[eventName].bets || undefined;
+    const totalWagered = closedEvents[eventName].total_wagered;
+    if (!bets) return;
+
+    let teamWagers = {};
+
+    for (let user in bets) {
+      const team = bets[user].team;
+      const wager = bets[user].wager;
+
+      if (!teamWagers[team]) {
+        teamWagers[team] = 0;
+      }
+      teamWagers[team] += wager;
+    }
+    for (let user in bets) {
+      const bet = bets[user];
+      if (bet.team === teamID) {
+        const userWager = bet.wager;
+        const teamTotalWagered = teamWagers[teamID];
+        const userReward = (userWager / teamTotalWagered) * totalWagered;
+
+        console.log(`/gift ${user} ${userReward.toFixed(2)} Congrats you won!`);
+        sendMessage(`/gift ${user} ${userReward.toFixed(2)} Congrats you won!`);
+      }
+    }
+  }
+
+  function sendMessage(message) {
+    const textArea = document.getElementById("chatbox__messages-create");
+    textArea.value = message;
+    textArea.dispatchEvent(
+      new KeyboardEvent("keydown", {
+        keyCode: 13,
+      })
+    );
   }
   getClosedTournaments();
   getOpenTournaments();

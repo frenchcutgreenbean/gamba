@@ -2,7 +2,7 @@
     "EURO_24": {
         "image": "https://i.ibb.co/L9kx0Nm/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception.webp",
         "gift_flag": "euro",
-        "total_wagered": 300000,
+        "total_wagered": 200000,
         "clean_name": "UEFA EURO 2024",
         "close_date": "06-16-2024",
         "close_time": "12:00:00",
@@ -135,7 +135,7 @@
                 "team": 20
             },
             "dantayy": {
-                "wager": 200000,
+                "wager": 100000,
                 "team": 11
             }
         }
