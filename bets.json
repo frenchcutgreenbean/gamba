@@ -2,7 +2,7 @@
     "EURO_24": {
         "image": "https://i.ibb.co/L9kx0Nm/22700824-euro-2024-allemagne-officiel-logo-avec-nom-bleu-symbole-europeen-football-final-conception.webp",
         "gift_flag": "euro",
-        "total_wagered": 100000,
+        "total_wagered": 300000,
         "clean_name": "UEFA EURO 2024",
         "close_date": "06-16-2024",
         "close_time": "12:00:00",
@@ -133,6 +133,10 @@
             "jacksaw": {
                 "wager": 100000,
                 "team": 20
+            },
+            "dantayy": {
+                "wager": 200000,
+                "team": 11
             }
         }
     },
@@ -263,26 +267,5 @@
         "clean_name": "Spain vs Croatia",
         "image": null,
         "gift_flag": "spvhr"
-    },
-    "CHvHU": {
-        "status": "open",
-        "bets": {},
-        "total_wagered": 0,
-        "teams": {
-            "0": [
-                "switzerland",
-                "ch",
-                "sui"
-            ],
-            "1": [
-                "hungary",
-                "hu",
-                "hun"
-            ]
-        },
-        "clean_name": "Switzerland vs Hungary",
-        "close_date": "06-15-2024",
-        "close_time": "13:00:00",
-        "gift_flag": "chvhu"
     }
 }
